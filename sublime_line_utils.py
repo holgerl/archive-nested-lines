@@ -47,8 +47,8 @@ def move_line_after(view, edit, row, target_row):
     last_row = view.rowcol(view.size())[0] # len(lines) - 1 blir feil hvis siste linje er tom
 
     if (last_row < row or last_row < target_row):
-        sublime.error_message(f"Can not move {row} to {target_row} beyond last line {last_row}") # Skjer også om man flytter siste linje, men siste linje er helt tom
-        return False
+        # Skjer også om man flytter siste linje, men siste linje er helt tom
+        raise AssertionError(f"Can not move {row} to {target_row} beyond last line {last_row}")
 
     text = get_line(view, row)
     insert_line_after(view, edit, target_row, text)
