@@ -27,12 +27,6 @@ def find_insertion_and_lines_to_insert(view, line_index):
     lines = view.lines(sublime.Region(0, view.size()))
     last_line = len(lines) - 1
 
-    if len(parents) == 0:
-        print(f"No parents")
-        lines_to_insert = [p[1] for p in parents] 
-        lines_to_insert.insert(0, "") # Tom linje først for å se pent ut
-        return last_line, lines_to_insert
-
     current_parent_index = 0
     root = -1
     root_parent_i, root_parent_text = parents[0]
