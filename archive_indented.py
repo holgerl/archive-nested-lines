@@ -1,18 +1,18 @@
 import sublime
 import sublime_plugin
 import time
-from .sublime_util import get_selected_lines, move_line_after, insert_line_after, cut_line, get_line, indent_of2
+from .sublime_util import get_selected_lines, move_line_after, insert_lines_after, cut_line, get_line, indent_of
 
 def get_indented_parents(view, line_number):
     start = view.text_point(line_number, 0)
-    current = indent_of2(view, view.substr(view.line(start)))
+    current = indent_of(view, view.substr(view.line(start)))
 
     parents = [(line_number, get_line(view, line_number))]
     row = line_number - 1
     while row >= 0 and current > 0:
         line = view.substr(view.line(view.text_point(row, 0)))
         if line.strip():  # skip blank lines
-            indent = indent_of2(view, line)
+            indent = indent_of(view, line)
             if indent < current:
                 parents.insert(0, (row, line))
                 current = indent
@@ -20,8 +20,6 @@ def get_indented_parents(view, line_number):
     return parents
 
 def find_insertion_and_lines_to_insert(view, line_index):
-    # TODO: Denne funker ikke i alle cases. Lag ordentlige tester og en ryddig korrekt implementasjon
-
     text = get_line(view, line_index)
 
     parents = get_indented_parents(view, line_index)
@@ -70,10 +68,10 @@ def find_insertion_and_lines_to_insert(view, line_index):
     print(f"last_found_parent: {last_found_parent} ({parents[last_found_parent_i]})")
 
     insertion_line = last_found_parent
-    indent = indent_of2(view, text)
+    indent = indent_of(view, text)
 
     nof_lines = len(lines)
-    while insertion_line + 1 < nof_lines and indent_of2(view, get_line(view, insertion_line + 1)) >= indent:
+    while insertion_line + 1 < nof_lines and indent_of(view, get_line(view, insertion_line + 1)) >= indent:
         insertion_line += 1
 
     lines_to_insert = [p[1] for p in parents[(last_found_parent_i + 1):]] 
@@ -82,27 +80,14 @@ def find_insertion_and_lines_to_insert(view, line_index):
 
 class ArchiveIndentedCommand(sublime_plugin.TextCommand):
     def run(self, edit):
-        lines = get_selected_lines(self.view)
+        selected_lines = get_selected_lines(self.view)
 
-        for i in range(len(lines)):
-            line_index = lines[i]
+        for line_index in selected_lines:
             target_line, lines_to_insert = find_insertion_and_lines_to_insert(self.view, line_index)
 
             print(f"target_line: {target_line} lines_to_insert: {lines_to_insert}")
+            
+            insert_lines_after(self.view, edit, target_line, lines_to_insert)
 
-            for insert_line in lines_to_insert:
-                insert_line_after(self.view, edit, target_line, insert_line)
-                target_line += 1
-
-            #cut_line(self.view, edit, line_index)
-            #move_line_after(self.view, edit, line_index, target_line)
-
-            # Move all indices of lines that were affected by the move:
-            #lines = [x - 1 if line_index <= x <= target_line else x for x in lines]
-
-            # Move target if that was affected:
-            #target_line = target_line + 1 if target_line < line_index else target_line
-
-
-        for line in reversed(lines):
+        for line in reversed(selected_lines):
             cut_line(self.view, edit, line)

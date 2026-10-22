@@ -8,7 +8,7 @@ def get_line(view, row):
     return view.substr(line)
 
 
-def indent_of2(view, text):
+def indent_of(view, text):
     tab_size = view.settings().get("tab_size", 4)
     expanded = text.expandtabs(tab_size)
     return len(expanded) - len(expanded.lstrip())
@@ -35,6 +35,11 @@ def insert_line_after(view, edit, row, text):
     else:
         # Append after the last line, adding a newline in front
         view.insert(edit, view.size(), "\n" + text + "\n")
+
+def insert_lines_after(view, edit, row, lines_to_insert):
+    for insert_line in lines_to_insert:
+        insert_line_after(view, edit, row, insert_line)
+        row += 1
 
 def move_line_after(view, edit, a, b):
     print(f"moving line {a} to after {b}")
