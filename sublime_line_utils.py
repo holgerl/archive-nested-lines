@@ -2,7 +2,6 @@ import sublime
 import sublime_plugin
 
 def get_line(view, row):
-    """Return the text of a 0-based row, or None if out of range."""
     point = view.text_point(row, 0)
     line = view.line(point)
     return view.substr(line)
@@ -41,40 +40,38 @@ def insert_lines_after(view, edit, row, lines_to_insert):
         insert_line_after(view, edit, row, insert_line)
         row += 1
 
-def move_line_after(view, edit, a, b):
-    print(f"moving line {a} to after {b}")
-
-    if (a == b): 
+def move_line_after(view, edit, row, target_row):
+    if (row == target_row): 
         return True
 
-    last_line = view.rowcol(view.size())[0] # len(lines) - 1 blir feil hvis siste linje er tom
+    last_row = view.rowcol(view.size())[0] # len(lines) - 1 blir feil hvis siste linje er tom
 
-    if (last_line < a or last_line < b):
-        sublime.error_message(f"Can not move {a} to {b} beyond last line {last_line}") # Skjer også om man flytter siste linje, men siste linje er helt tom
+    if (last_row < row or last_row < target_row):
+        sublime.error_message(f"Can not move {row} to {target_row} beyond last line {last_row}") # Skjer også om man flytter siste linje, men siste linje er helt tom
         return False
 
-    text = get_line(view, a)
-    insert_line_after(view, edit, b, text)
+    text = get_line(view, row)
+    insert_line_after(view, edit, target_row, text)
 
-    # Original line a is moved one down if a was after b:
-    new_a = a+1 if (a > b) else a
+    # Original line is moved one down if it was after the target:
+    new_row = row+1 if (row > target_row) else row
 
-    cut_line(view, edit, new_a)
+    cut_line(view, edit, new_row)
 
     return True
 
-def move_lines_after(view, edit, lines, target_line):
-    for i in range(len(lines)):
-        line_index = lines[i]
-        move_line_after(view, edit, line_index, target_line)
+def move_lines_after(view, edit, rows, target_row):
+    for i in range(len(rows)):
+        row = rows[i]
+        move_line_after(view, edit, row, target_row)
 
-        # Move all indices of lines that were affected by the move:
-        lines = [x - 1 if line_index <= x <= target_line else x for x in lines]
+        # Move all rows that were affected by the move:
+        rows = [other_row - 1 if row <= other_row <= target_row else other_row for other_row in rows]
 
         # Move target if that was affected:
-        target_line = target_line + 1 if target_line < line_index else target_line
+        target_row = target_row + 1 if target_row < row else target_row
 
-def get_selected_lines(view):
+def get_selected_rows(view):
     rows = set()
     for region in view.sel():
         first_row = view.rowcol(region.begin())[0]

@@ -1,7 +1,7 @@
 import sublime
 import sublime_plugin
 import time
-from .sublime_line_utils import get_selected_lines, move_line_after, insert_lines_after, cut_line, get_line, indent_of
+from .sublime_line_utils import get_selected_rows, move_line_after, insert_lines_after, cut_line, get_line, indent_of
 
 def get_indented_parents(view, line_number):
     start = view.text_point(line_number, 0)
@@ -80,7 +80,7 @@ def find_insertion_and_lines_to_insert(view, line_index):
 
 class ArchiveNestedLinesCommand(sublime_plugin.TextCommand):
     def run(self, edit):
-        selected_lines = get_selected_lines(self.view)
+        selected_lines = get_selected_rows(self.view)
 
         for line_index in selected_lines:
             target_line, lines_to_insert = find_insertion_and_lines_to_insert(self.view, line_index)
