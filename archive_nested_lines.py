@@ -37,7 +37,6 @@ def find_insertion_and_lines_to_insert(view, line_index):
         line = view.rowcol(line_region.begin())[0]
 
         if line != root_parent_i and root_parent_text == view.substr(line_region):
-            print(f"found archived root at {line}")
             root = line
             break
 
@@ -47,6 +46,7 @@ def find_insertion_and_lines_to_insert(view, line_index):
         lines_to_insert.insert(0, "") # Tom linje først for å se pent ut
         return last_line, lines_to_insert
 
+    print(f"found archived root at {root} ({root_parent_text})")
 
     ## Search downwards for each archived parent in hierarchy
 
@@ -58,7 +58,7 @@ def find_insertion_and_lines_to_insert(view, line_index):
             break
         next_parent_row, next_parent_text = parents[last_found_parent_i + 1]
         if get_line(view, i) == next_parent_text and i != next_parent_row:
-            print(f"found: {next_parent_text} at {i}  p_i={last_found_parent_i}")
+            print(f"found intermediate parent: {next_parent_text} at {i}  p_i={last_found_parent_i}")
             last_found_parent = i
             last_found_parent_i += 1
 
