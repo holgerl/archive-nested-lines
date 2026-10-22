@@ -5,7 +5,7 @@ Lives in a subfolder so Sublime doesn't load it as a plugin.
 """
 import unittest
 
-from fake_sublime import ERRORS, FakeView, Region, sublime_line_utils as su, t
+from fake_sublime import FakeView, Region, sublime_line_utils as su, t
 
 
 class GetLineTests(unittest.TestCase):
@@ -208,16 +208,15 @@ class MoveLineAfterTests(unittest.TestCase):
         self.assertTrue(su.move_line_after(v, None, 0, 2))
         self.assertEqual(v.text, after)
 
-    def test_beyond_last_line_fails(self):
-        ERRORS.clear()
+    def test_beyond_last_line_raises(self):
         before = t("""
             a
             b
             """)
         v = FakeView(before)
-        self.assertFalse(su.move_line_after(v, None, 0, 10))
+        with self.assertRaisesRegex(AssertionError, "beyond last line"):
+            su.move_line_after(v, None, 0, 10)
         self.assertEqual(v.text, before)
-        self.assertEqual(len(ERRORS), 1)
 
 
 class MoveLinesAfterTests(unittest.TestCase):
