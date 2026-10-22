@@ -78,7 +78,7 @@ def find_insertion_and_lines_to_insert(view, line_index):
 
     return insertion_line, lines_to_insert
 
-class ArchiveIndentedCommand(sublime_plugin.TextCommand):
+class ArchiveNestedLinesCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         selected_lines = get_selected_lines(self.view)
 

@@ -3,97 +3,9 @@
 Uses a minimal fake of the sublime API, so no Sublime Text is needed.
 Lives in a subfolder so Sublime doesn't load it as a plugin.
 """
-import os
-import sys
-import types
-import textwrap
 import unittest
 
-
-def t(s):
-    """Dedent a triple-quoted text block and drop its leading newline."""
-    return textwrap.dedent(s).lstrip("\n")
-
-
-class Region:
-    def __init__(self, a, b=None):
-        self.a = a
-        self.b = a if b is None else b
-
-    def begin(self):
-        return min(self.a, self.b)
-
-    def end(self):
-        return max(self.a, self.b)
-
-    def empty(self):
-        return self.a == self.b
-
-    def __eq__(self, other):
-        return (self.a, self.b) == (other.a, other.b)
-
-    def __repr__(self):
-        return "Region({}, {})".format(self.a, self.b)
-
-
-ERRORS = []
-
-sublime_stub = types.ModuleType("sublime")
-sublime_stub.Region = Region
-sublime_stub.error_message = ERRORS.append
-sys.modules["sublime"] = sublime_stub
-sys.modules["sublime_plugin"] = types.ModuleType("sublime_plugin")
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-import sublime_util as su  # noqa: E402
-
-
-class FakeView:
-    def __init__(self, text="", tab_size=4):
-        self.text = text
-        self._tab_size = tab_size
-        self._sel = []
-
-    def settings(self):
-        return {"tab_size": self._tab_size}
-
-    def size(self):
-        return len(self.text)
-
-    def sel(self):
-        return self._sel
-
-    def substr(self, region):
-        return self.text[region.begin():region.end()]
-
-    def text_point(self, row, col):
-        lines = self.text.split("\n")
-        if row >= len(lines):
-            return len(self.text)
-        start = sum(len(l) + 1 for l in lines[:row])
-        return start + min(col, len(lines[row]))
-
-    def rowcol(self, point):
-        before = self.text[:point]
-        row = before.count("\n")
-        return row, point - (before.rfind("\n") + 1)
-
-    def line(self, point):
-        point = point.begin() if isinstance(point, Region) else point
-        start = self.text.rfind("\n", 0, point) + 1
-        end = self.text.find("\n", point)
-        return Region(start, len(self.text) if end == -1 else end)
-
-    def full_line(self, point):
-        r = self.line(point)
-        end = r.end() + 1 if r.end() < len(self.text) else r.end()
-        return Region(r.begin(), end)
-
-    def insert(self, edit, point, text):
-        self.text = self.text[:point] + text + self.text[point:]
-
-    def erase(self, edit, region):
-        self.text = self.text[:region.begin()] + self.text[region.end():]
+from fake_sublime import ERRORS, FakeView, Region, sublime_util as su, t
 
 
 class GetLineTests(unittest.TestCase):
@@ -107,14 +19,14 @@ class GetLineTests(unittest.TestCase):
 
 class IndentTests(unittest.TestCase):
     def test_spaces(self):
-        self.assertEqual(su.indent_of2(FakeView(), "    x"), 4)
+        self.assertEqual(su.indent_of(FakeView(), "    x"), 4)
 
     def test_tabs_use_tab_size(self):
-        self.assertEqual(su.indent_of2(FakeView(tab_size=4), "\tx"), 4)
-        self.assertEqual(su.indent_of2(FakeView(tab_size=2), "\t\tx"), 4)
+        self.assertEqual(su.indent_of(FakeView(tab_size=4), "\tx"), 4)
+        self.assertEqual(su.indent_of(FakeView(tab_size=2), "\t\tx"), 4)
 
     def test_none(self):
-        self.assertEqual(su.indent_of2(FakeView(), "x"), 0)
+        self.assertEqual(su.indent_of(FakeView(), "x"), 0)
 
 
 class CutLineTests(unittest.TestCase):
@@ -191,6 +103,48 @@ class InsertLineAfterTests(unittest.TestCase):
             """)
         v = FakeView(before)
         su.insert_line_after(v, None, 1, "X")
+        self.assertEqual(v.text, after)
+
+
+class InsertLinesAfterTests(unittest.TestCase):
+    def test_lines_are_inserted_in_order(self):
+        before = t("""
+            a
+            b
+            c
+            """)
+        after = t("""
+            a
+            X
+            Y
+            b
+            c
+            """)
+        v = FakeView(before)
+        su.insert_lines_after(v, None, 0, ["X", "Y"])
+        self.assertEqual(v.text, after)
+
+    def test_no_lines_changes_nothing(self):
+        before = t("""
+            a
+            b
+            """)
+        v = FakeView(before)
+        su.insert_lines_after(v, None, 0, [])
+        self.assertEqual(v.text, before)
+
+    def test_after_last_line_without_trailing_newline(self):
+        before = t("""
+            a
+            b""")
+        after = t("""
+            a
+            b
+            X
+            Y
+            """)
+        v = FakeView(before)
+        su.insert_lines_after(v, None, 1, ["X", "Y"])
         self.assertEqual(v.text, after)
 
 
