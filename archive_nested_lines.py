@@ -59,8 +59,8 @@ def find_insertion_and_lines_to_insert(view, line_index):
     for i in range(last_found_parent, len(lines)):
         if last_found_parent_i + 1 > len(parents) - 1: 
             break
-        _, next_parent_text = parents[last_found_parent_i + 1]
-        if get_line(view, i) == next_parent_text:
+        next_parent_row, next_parent_text = parents[last_found_parent_i + 1]
+        if get_line(view, i) == next_parent_text and i != next_parent_row:
             print(f"found: {next_parent_text} at {i}  p_i={last_found_parent_i}")
             last_found_parent = i
             last_found_parent_i += 1
