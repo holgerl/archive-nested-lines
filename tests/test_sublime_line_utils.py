@@ -5,7 +5,7 @@ Lives in a subfolder so Sublime doesn't load it as a plugin.
 """
 import unittest
 
-from fake_sublime import ERRORS, FakeView, Region, sublime_util as su, t
+from fake_sublime import ERRORS, FakeView, Region, sublime_line_utils as su, t
 
 
 class GetLineTests(unittest.TestCase):

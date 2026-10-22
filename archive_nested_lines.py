@@ -1,7 +1,7 @@
 import sublime
 import sublime_plugin
 import time
-from .sublime_util import get_selected_lines, move_line_after, insert_lines_after, cut_line, get_line, indent_of
+from .sublime_line_utils import get_selected_lines, move_line_after, insert_lines_after, cut_line, get_line, indent_of
 
 def get_indented_parents(view, line_number):
     start = view.text_point(line_number, 0)
