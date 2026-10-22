@@ -5,17 +5,17 @@ from .sublime_line_utils import get_selected_rows, move_line_after, insert_lines
 
 def get_indented_parents(view, line_number):
     start = view.text_point(line_number, 0)
-    current = indent_of(view, view.substr(view.line(start)))
+    current_indent = 1000000 # Infinity
 
-    parents = [(line_number, get_line(view, line_number))]
-    row = line_number - 1
-    while row >= 0 and current > 0:
+    parents = []
+    row = line_number
+    while row >= 0 and current_indent > 0:
         line = view.substr(view.line(view.text_point(row, 0)))
         if line.strip():  # skip blank lines
             indent = indent_of(view, line)
-            if indent < current:
+            if indent < current_indent:
                 parents.insert(0, (row, line))
-                current = indent
+                current_indent = indent
         row -= 1
     return parents
 
