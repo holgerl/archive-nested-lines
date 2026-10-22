@@ -27,6 +27,8 @@ def find_insertion_and_lines_to_insert(view, line_index):
     lines = view.lines(sublime.Region(0, view.size()))
     last_line = len(lines) - 1
 
+    ## Search bottom up for root parent in archived lines
+
     current_parent_index = 0
     root = -1
     root_parent_i, root_parent_text = parents[0]
@@ -45,6 +47,9 @@ def find_insertion_and_lines_to_insert(view, line_index):
         lines_to_insert.insert(0, "") # Tom linje først for å se pent ut
         return last_line, lines_to_insert
 
+
+    ## Search downwards for each archived parent in hierarchy
+
     last_found_parent_i = 0
     last_found_parent = root
 
@@ -59,6 +64,8 @@ def find_insertion_and_lines_to_insert(view, line_index):
 
     print(f"last_found_parent: {last_found_parent} ({parents[last_found_parent_i]})")
 
+    ## Insertion line is the line below the last archived parent where indentation decreases
+
     insertion_line = last_found_parent
     text = get_line(view, line_index)
     indent = indent_of(view, text)
@@ -66,6 +73,8 @@ def find_insertion_and_lines_to_insert(view, line_index):
     nof_lines = len(lines)
     while insertion_line + 1 < nof_lines and indent_of(view, get_line(view, insertion_line + 1)) >= indent:
         insertion_line += 1
+
+    ## Lines to insert are the remaining lines in the hierarchy after the last archived parent
 
     lines_to_insert = [p[1] for p in parents[(last_found_parent_i + 1):]] 
 
