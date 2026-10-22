@@ -260,24 +260,24 @@ class MoveLinesAfterTests(unittest.TestCase):
         self.assertEqual(v.text, after)
 
 
-class GetSelectedLinesTests(unittest.TestCase):
+class GetSelectedRowsTests(unittest.TestCase):
     def view(self, *regions):
         v = FakeView("aa\nbb\ncc\ndd\n")
         v._sel = list(regions)
         return v
 
     def test_cursor(self):
-        self.assertEqual(su.get_selected_lines(self.view(Region(4))), [1])
+        self.assertEqual(su.get_selected_rows(self.view(Region(4))), [1])
 
     def test_multiline_selection(self):
-        self.assertEqual(su.get_selected_lines(self.view(Region(1, 7))), [0, 1, 2])
+        self.assertEqual(su.get_selected_rows(self.view(Region(1, 7))), [0, 1, 2])
 
     def test_selection_ending_at_column_zero_excludes_that_line(self):
-        self.assertEqual(su.get_selected_lines(self.view(Region(0, 6))), [0, 1])
+        self.assertEqual(su.get_selected_rows(self.view(Region(0, 6))), [0, 1])
 
     def test_multiple_regions_deduplicated_and_sorted(self):
         v = self.view(Region(7), Region(0), Region(1))
-        self.assertEqual(su.get_selected_lines(v), [0, 2])
+        self.assertEqual(su.get_selected_rows(v), [0, 2])
 
 
 if __name__ == "__main__":
