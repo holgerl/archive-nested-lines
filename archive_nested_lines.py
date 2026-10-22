@@ -20,8 +20,6 @@ def get_indented_parents(view, line_number):
     return parents
 
 def find_insertion_and_lines_to_insert(view, line_index):
-    text = get_line(view, line_index)
-
     parents = get_indented_parents(view, line_index)
     
     print(f"line_index: {line_index} parents: {parents}")
@@ -68,6 +66,7 @@ def find_insertion_and_lines_to_insert(view, line_index):
     print(f"last_found_parent: {last_found_parent} ({parents[last_found_parent_i]})")
 
     insertion_line = last_found_parent
+    text = get_line(view, line_index)
     indent = indent_of(view, text)
 
     nof_lines = len(lines)
@@ -75,6 +74,11 @@ def find_insertion_and_lines_to_insert(view, line_index):
         insertion_line += 1
 
     lines_to_insert = [p[1] for p in parents[(last_found_parent_i + 1):]] 
+
+    # TODO: Det skjer rare ting hvis man prøver å archive noe som allerede ligger i archive, og som har en parent som fra før av ligger oppe utenfor archive
+
+    if (insertion_line <= line_index):
+        raise AssertionError(f"ERROR: Archive insertion point was not below: {insertion_line} <= {line_index}")
 
     return insertion_line, lines_to_insert
 
@@ -85,7 +89,7 @@ class ArchiveNestedLinesCommand(sublime_plugin.TextCommand):
         for line_index in selected_lines:
             target_line, lines_to_insert = find_insertion_and_lines_to_insert(self.view, line_index)
 
-            print(f"target_line: {target_line} lines_to_insert: {lines_to_insert}")
+            print(f"-> target_line: {target_line} lines_to_insert: {lines_to_insert}")
             
             insert_lines_after(self.view, edit, target_line, lines_to_insert)
 
