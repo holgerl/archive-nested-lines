@@ -3,7 +3,7 @@ import sublime_plugin
 import time
 from .sublime_line_utils import get_selected_rows, move_line_after, insert_lines_after, cut_line, get_line, indent_of
 
-def get_indented_parents(view, line_number):
+def get_indented_hierarchy(view, line_number):
     start = view.text_point(line_number, 0)
     current_indent = 1000000 # Infinity
 
@@ -20,9 +20,9 @@ def get_indented_parents(view, line_number):
     return parents
 
 def find_insertion_and_lines_to_insert(view, line_index):
-    parents = get_indented_parents(view, line_index)
+    parents = get_indented_hierarchy(view, line_index)
     
-    print(f"line_index: {line_index} parents: {parents}")
+    print(f"line_index: {line_index} hierarchy: {parents}")
 
     lines = view.lines(sublime.Region(0, view.size()))
     last_line = len(lines) - 1

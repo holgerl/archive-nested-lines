@@ -473,8 +473,8 @@ class ArchiveEdgeCaseTests(unittest.TestCase):
         self.assertEqual(before_lines - after_lines, Counter())
 
 
-class GetIndentedParentsTests(unittest.TestCase):
-    """get_indented_parents returns [(row, text)] outermost first, ending with the line itself."""
+class GetIndentedHierarchyTests(unittest.TestCase):
+    """get_indented_hierarchy returns [(row, text)] outermost first, ending with the line itself."""
 
     DOC = t("""
         A
@@ -487,7 +487,7 @@ class GetIndentedParentsTests(unittest.TestCase):
         """)
 
     def parents(self, row, text=None):
-        return ai.get_indented_parents(FakeView(text or self.DOC), row)
+        return ai.get_indented_hierarchy(FakeView(text or self.DOC), row)
 
     def test_top_level_line_has_only_itself(self):
         self.assertEqual(self.parents(0), [(0, "A")])
