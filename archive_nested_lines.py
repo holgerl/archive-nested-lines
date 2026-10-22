@@ -50,23 +50,23 @@ def find_insertion_and_lines_to_insert(view, line_index):
 
     ## Search downwards for each archived parent in hierarchy
 
-    last_found_parent_i = 0
-    last_found_parent = root
+    last_archived_parent_i = 0
+    last_archived_parent = root
 
-    for i in range(last_found_parent, len(lines)):
-        if last_found_parent_i + 1 > len(hierarchy) - 1: 
+    for i in range(last_archived_parent, len(lines)):
+        if last_archived_parent_i + 1 > len(hierarchy) - 1: 
             break
-        next_parent_row, next_parent_text = hierarchy[last_found_parent_i + 1]
+        next_parent_row, next_parent_text = hierarchy[last_archived_parent_i + 1]
         if get_line(view, i) == next_parent_text and i != next_parent_row:
-            print(f"found intermediate parent: {next_parent_text} at {i}  p_i={last_found_parent_i}")
-            last_found_parent = i
-            last_found_parent_i += 1
+            print(f"found intermediate parent: {next_parent_text} at {i}  p_i={last_archived_parent_i}")
+            last_archived_parent = i
+            last_archived_parent_i += 1
 
-    print(f"last_found_parent: {last_found_parent} ({hierarchy[last_found_parent_i]})")
+    print(f"last_archived_parent: {last_archived_parent} ({hierarchy[last_archived_parent_i]})")
 
     ## Insertion line is the line below the last archived parent where indentation decreases
 
-    insertion_line = last_found_parent
+    insertion_line = last_archived_parent
     text = get_line(view, line_index)
     indent = indent_of(view, text)
 
@@ -76,7 +76,7 @@ def find_insertion_and_lines_to_insert(view, line_index):
 
     ## Lines to insert are the remaining lines in the hierarchy after the last archived parent
 
-    lines_to_insert = [p[1] for p in hierarchy[(last_found_parent_i + 1):]] 
+    lines_to_insert = [p[1] for p in hierarchy[(last_archived_parent_i + 1):]] 
 
     # TODO: Det skjer rare ting hvis man prøver å archive noe som allerede ligger i archive, og som har en parent som fra før av ligger oppe utenfor archive
 
