@@ -36,6 +36,9 @@ def find_insertion_and_lines_to_insert(view, line_index):
     for line_region in reversed(lines):
         line = view.rowcol(line_region.begin())[0]
 
+        if (line <= line_index):
+            break
+
         if line != root_parent_i and root_parent_text == view.substr(line_region):
             root = line
             break
