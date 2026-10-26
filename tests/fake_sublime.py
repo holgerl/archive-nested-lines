@@ -66,7 +66,7 @@ def _install():
 
 _install()
 
-sublime_line_utils = importlib.import_module("user_pkg.sublime_line_utils")
+sublime_line_utils = importlib.import_module("user_pkg.lib.sublime_line_utils")
 archive_nested_lines = importlib.import_module("user_pkg.archive_nested_lines")
 
 
