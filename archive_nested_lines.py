@@ -1,6 +1,5 @@
 import sublime
 import sublime_plugin
-import time
 from .sublime_line_utils import get_selected_rows, move_line_after, insert_lines_after, cut_line, get_line, indent_of
 
 def get_indented_hierarchy(view, line_number):
@@ -22,7 +21,6 @@ def get_indented_hierarchy(view, line_number):
 def find_insertion_and_lines_to_insert(view, line_index):
     hierarchy = get_indented_hierarchy(view, line_index)
     
-    print(f"line_index: {line_index} hierarchy: {hierarchy}")
 
     lines = view.lines(sublime.Region(0, view.size()))
     last_line = len(lines) - 1
@@ -44,12 +42,10 @@ def find_insertion_and_lines_to_insert(view, line_index):
             break
 
     if root == -1:
-        print(f"No archived root")
         lines_to_insert = [p[1] for p in hierarchy] 
         lines_to_insert.insert(0, "") # Tom linje først for å se pent ut
         return last_line, lines_to_insert
 
-    print(f"found archived root at {root} ({root_parent_text})")
 
     ## Search downwards for each archived parent in hierarchy
 
@@ -61,11 +57,9 @@ def find_insertion_and_lines_to_insert(view, line_index):
             break
         next_parent_row, next_parent_text = hierarchy[last_archived_parent_i + 1]
         if get_line(view, i) == next_parent_text and i != next_parent_row:
-            print(f"found intermediate parent: {next_parent_text} at {i}  p_i={last_archived_parent_i}")
             last_archived_parent = i
             last_archived_parent_i += 1
 
-    print(f"last_archived_parent: {last_archived_parent} ({hierarchy[last_archived_parent_i]})")
 
     ## Insertion line is the line below the last archived parent where indentation decreases
 
@@ -95,7 +89,6 @@ class ArchiveNestedLinesCommand(sublime_plugin.TextCommand):
         for line_index in selected_lines:
             target_line, lines_to_insert = find_insertion_and_lines_to_insert(self.view, line_index)
 
-            print(f"-> target_line: {target_line} lines_to_insert: {lines_to_insert}")
             
             insert_lines_after(self.view, edit, target_line, lines_to_insert)
 

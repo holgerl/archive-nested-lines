@@ -1,0 +1,5 @@
+# Personal Sublime Text User-folder files (not part of the package)
+*.sublime-keymap
+*.sublime-settings
+Package Control.*
+__pycache__/

@@ -1,0 +1,6 @@
+/tests export-ignore
+/run-tests.sh export-ignore
+/prompt-gif.txt export-ignore
+/archive_nested_lines_demo.gif export-ignore
+/.gitattributes export-ignore
+/.gitignore export-ignore
