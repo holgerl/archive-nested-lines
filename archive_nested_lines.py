@@ -20,10 +20,14 @@ def get_indented_hierarchy(view, line_number):
 
 def find_insertion_and_lines_to_insert(view, line_index):
     hierarchy = get_indented_hierarchy(view, line_index)
-    
 
     lines = view.lines(sublime.Region(0, view.size()))
     last_line = len(lines) - 1
+
+    text = get_line(view, line_index)
+
+    if not text.strip(): # Ikke gå videre når linjen var tom eller bare whitespace, siden det ikke støttes av algoritmen
+        return last_line, []
 
     ## Search bottom up for root parent in archived lines
 
@@ -46,7 +50,6 @@ def find_insertion_and_lines_to_insert(view, line_index):
         lines_to_insert.insert(0, "") # Tom linje først for å se pent ut
         return last_line, lines_to_insert
 
-
     ## Search downwards for each archived parent in hierarchy
 
     last_archived_parent_i = 0
@@ -60,11 +63,9 @@ def find_insertion_and_lines_to_insert(view, line_index):
             last_archived_parent = i
             last_archived_parent_i += 1
 
-
     ## Insertion line is the line below the last archived parent where indentation decreases
 
     insertion_line = last_archived_parent
-    text = get_line(view, line_index)
     indent = indent_of(view, text)
 
     nof_lines = len(lines)
@@ -89,7 +90,6 @@ class ArchiveNestedLinesCommand(sublime_plugin.TextCommand):
         for line_index in selected_lines:
             target_line, lines_to_insert = find_insertion_and_lines_to_insert(self.view, line_index)
 
-            
             insert_lines_after(self.view, edit, target_line, lines_to_insert)
 
         for line in reversed(selected_lines):
