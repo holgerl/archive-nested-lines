@@ -55,11 +55,21 @@ def find_insertion_and_lines_to_insert(view, line_index):
     last_archived_parent_i = 0
     last_archived_parent = root
 
+    root_indent = indent_of(view, root_parent_text)
+
     for i in range(last_archived_parent, len(lines)):
         if last_archived_parent_i + 1 > len(hierarchy) - 1: 
             break
+
+        line = get_line(view, i)
+
+        if i > root and line.strip() and indent_of(view, line) <= root_indent:
+            # Hvis indent er mindre enn root parent har vi gått for langt
+            break
+
         next_parent_row, next_parent_text = hierarchy[last_archived_parent_i + 1]
-        if get_line(view, i) == next_parent_text and i != next_parent_row:
+
+        if line == next_parent_text and i != next_parent_row:
             last_archived_parent = i
             last_archived_parent_i += 1
 
