@@ -1,3 +1,9 @@
 Make a gif that shows what this Sublime plugin does: /Users/Holger.Ludvigsen/Library/Application Support/Sublime Text/Packages/User/archive_nested_lines.py
 
 It should be with real text that looks like todos and notes to remember. Make a squiggly line or something in the gif that separates the top of the file from the archive in the bottom, so that it is not too long vertically. Show first archiving of three lines one-by-one, and then at the end archiving of a multiline selection. The total gif should be around 8-10 seconds long
+
+---
+
+Make a 800x800 gif that shows what this Sublime plugin does: /Users/Holger.Ludvigsen/Library/Application Support/Sublime Text/Packages/User/archive_nested_lines.py
+
+It should be with real text that looks like todos and notes to remember. The top of the files should have notes and todos, and then there is large empty space with empty lines, and in the bottom there are the archived lines. Show a squiggly line in the gif that separates the top of the file from the archive in the bottom, so that the gif is not too long vertically. Show first archiving of three lines one-by-one, and then at the end archiving of a multiline selection. Show both archiving of lines that have their parent hierarchy in the archive from before, and lines that are all new and make their own parents in the archive. The total gif should be around 10 seconds long

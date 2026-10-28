@@ -1,10 +1,10 @@
-# Archive nested lines
+# Archive Nested Lines - The world's simplest productivity tool
 
-A plugin for Sublime Text that archives text lines to the bottom of the file, while preserving nested indentation.
+Do you like using simple plain text files for your notes and todos? How about adding a quick command to your text editor to stash finished todos and notes to an archive?
 
-Great for completing todos and saving notes in your `todo.txt` or `notes.txt`.
+This is a plugin for Sublime Text that archives text lines to the bottom of the file, while preserving nested headings and sublists.
 
-No process and no syntax, just one single searchable plain text file. The top part has todos and information that is currently relevant, and the bottom part is an archive for reference.
+No process, no tools and no special syntax, just one single searchable plain text file. The top part has text lines that are currently relevant, and the bottom part is an archive for reference.
 
 ![Archive nested lines demo](https://raw.githubusercontent.com/holgerl/archive-nested-lines/main/archive_nested_lines_demo.gif)
 
@@ -21,6 +21,8 @@ Install with [Package Control](https://packagecontrol.io/):
 Place the cursor on a line (or select several lines) and run `Archive Nested Lines` from the Command Palette.
 
 The line is moved to the bottom of the file together with its parent lines (the lines above it with less indentation). If the parents are already archived, the line is placed under the existing archived parents.
+
+Add some empty lines between the archived ones and the rest, so it is easy to see what is what
 
 ## Key binding
 
